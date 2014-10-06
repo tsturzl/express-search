@@ -8,13 +8,12 @@ var _search=function(elasticSearch,index,type,fields){
 
 _search.prototype.search=function(q,sort,order,limit,page,cb){
     //get 'from' cursor based on size and page #
-    var from=(page-1)*limit;
+    var from=page*limit;
 
     //create query object
     var query={
         filtered:{}
     };
-
     /*  ---Build Query---   */
 
     //query string/text
@@ -35,8 +34,7 @@ _search.prototype.search=function(q,sort,order,limit,page,cb){
     }
 
     //set pagination params
-    //query.size=limit;
-    //query.from=from;
+
 
     //DEBUG STUFF
     console.log('QUERY: ',query);
@@ -46,6 +44,8 @@ _search.prototype.search=function(q,sort,order,limit,page,cb){
         index:this.index,
         type:this.type,
         body:{
+            size:limit,
+            from:from,
             query:query
         }
     }).then(

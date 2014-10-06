@@ -68,7 +68,7 @@ search.prototype.get=function(req,res){
             req.param('sort', null),     //sort field (string)
             req.param('order', 'asc'),   //order (string) either 'asc' or 'desc'
             req.param('limit', 10),      //limit (int)
-            req.param('page', 1),        //page (int)
+            req.param('page', 0),        //page (int)
             function (err, resp) {         //callback and respond
                 if (err) {
                     res.json({

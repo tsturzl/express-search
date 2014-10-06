@@ -1,4 +1,4 @@
 express-search
 ==============
 
-Search middleware for express using ElasticSearch
+Super simple search plugin for express v4.x

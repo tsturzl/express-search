@@ -1,52 +1,58 @@
 var elasticsearch=require('elasticsearch');
 var _search=require('./src/search.js');
 
-var search=function(options,done){
+var search=function(options){
 
     //check for and set index and type
-    if(options.hasOwnProperty('elasticSearch') && options.elasticSearch.index && options.elasticSearch.type){
-        this.index=options.elasticSearch.index;
-        this.type=options.elasticSearch.type;
+    if(options.hasOwnProperty('index') && options.hasOwnProperty('type')){
+        this.index=options.index;
+        this.type=options.type;
     }
     else{
-        done('Check your express-search configs! No index and/or type!');
-        return;
+        throw 'Check your express-search configs! No index and/or type!';
     }
 
     //check for and set host or official es client
-    if(options.elasticSearch.hasOwnProperty('hosts')){
+    if(options.hasOwnProperty('hosts')){
         this.elasticSearch=new elasticsearch.Client({
-            hosts:options.elasticSearch.hosts,
+            hosts:options.hosts,
             log:'trace'
         });
     }
-    else if(options.elasticSearch.hasOwnProperty(client)){
-        this.elasticSearch=options.elasticSearch.client;
+    else if(options.hasOwnProperty('client')){
+        this.elasticSearch=options.client;
     }
     else{
-        done("No elasticSearch client/connection provided!");
+        throw "No elasticSearch client/connection provided!";
     }
 
     //check for and set search fields
-    if(options.elasticSearch.hasOwnProperty('fields')){
-        this.fields=[].concat(options.elasticSearch.fields);
+    if(options.hasOwnProperty('fields')){
+        this.fields=[].concat(options.fields);
     }
     else{
-        done("No search field/s provided");
+        throw "No search field/s provided";
         return;
     }
 
     //create search object
     this.search=new _search(this.elasticSearch,this.index,this.type,this.fields);
-
-    done(null,this);
 };
 
 //Hook default routes
 search.prototype.hook=function(app){
     //body-parser? TODO
-    app.get('/search',this.get);
-    app.post('/search',this.post);
+    var me=this;
+    app.get('/search',function(req,res){
+        me.get(req,res);
+    });
+    app.put('/search',function(req,res){
+        if(!res){
+            console.log("WTF");
+        }
+        me.put(req,res);
+    });
+    console.log("HOOKED");
 };
 
 //TODO: Implement the ability to load as middleware.
@@ -54,6 +60,7 @@ search.prototype.middleware=function(req,res,next){};
 
 //GET to search
 search.prototype.get=function(req,res){
+    if (!req.body) return res.sendStatus(400);
     try {
         //send params to search module
         this.search.search(
@@ -85,49 +92,50 @@ search.prototype.get=function(req,res){
     }
 };
 
-//POST to insert document
-search.prototype.post=function(req,res){
-    this.insert(
-        res.param('body',null),
-        res.param('id',Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)), //if no id use random string
-        function(err,resp){
-            if(err){
+//create document(alias)
+search.create=function(me,id,doc,cb){
+    try{
+        me.search.create(id,doc,cb);
+    }
+    catch(e){
+        cb(e);
+    }
+};
+
+//PUT to create document
+search.prototype.put=function(req,res){
+    if (!req.body) return res.sendStatus(400);
+    //try {
+    var body=req.body;
+    search.create(
+        this,
+        body.id,
+        body,
+        function (err, resp) {
+            if (err) {
                 res.json({
-                    success:false,
-                    message:"Insert Failed!",
+                    success: false,
+                    message: "Insert Failed!",
                     error: err
                 });
             }
-            else{
+            else {
                 res.json(resp);
             }
         }
-    )
-};
-
-//Insert document(alias)
-search.prototype.insert=function(id,doc,cb){
-    try{
-        this.search.insert(id,doc,cb);
-    }
-    catch(e){
-        res.json({
-            success:false,
-            message:"Insert failed! Invalid parameters",
-            error:e
-        });
-    }
+    );
+    /*}
+     catch(e){
+     res.json({
+     success:false,
+     message:"Create Failed! Invalid parameters!",
+     error:e
+     });
+     }*/
 };
 
 //export function to init express-search
-module.exports=function(options,cb){
+module.exports=function(options){
     //initialize search object async'ly
-    new search(options,function(err,obj){
-        if(err){
-            cb(err);
-        }
-        else{
-            cb(null,obj);
-        }
-    });
+    return new search(options);
 };

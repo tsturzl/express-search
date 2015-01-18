@@ -22,7 +22,7 @@ If you want to search only documents with certain tags you can use hash tags in 
 
 
  ##Setup
- -----
+
 
  Set up is super simple. You just have to:
 

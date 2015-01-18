@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ev
 
+sleep 5
+
 curl -XPUT 127.0.0.1:9200/test/test/1 -d '
 {
     "title":"Test 1",

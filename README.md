@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/tsturzl/express-search.svg)](https://travis-ci.org/tsturzl/express-search) [![Code Climate](https://codeclimate.com/github/tsturzl/express-search/badges/gpa.svg)](https://codeclimate.com/github/tsturzl/express-search)
-express-search
-==============
+#express-search
+
 
 A beautifully bootstrapped elasticsearch search middleware for express v4.x.
 

@@ -105,12 +105,10 @@ queryBuilder.prototype.project=function(fields){
 
 //Sort by field either ascending or descending
 queryBuilder.prototype.sort=function(order){
+    order=order ? order : 'desc';
     var me=this;
     return {
         by:function(field){
-
-            //convert order to elasticsearch friendly order strings
-            order = (order === '1' || order === 1) ? 'asc': 'desc';
 
             var sortObj={};
 

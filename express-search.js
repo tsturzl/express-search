@@ -1,6 +1,8 @@
 var queryDSL=require('./src/queryDSL.js');
 var elasticsearch=require('elasticsearch');
 
+
+//search constructor
 var search=function(app,config){
    this.app=app;
    this.client=new elasticsearch.Client(config);
@@ -12,7 +14,7 @@ var search=function(app,config){
 var regexp = /"[^"]*"/g;
 var _replace = /"/g;
 var mentionReg = /(^|\W)@\w+/g;
-var tagReg = /(^|\W)@\w+/g;
+var tagReg = /(^|\W)#\w+/g;
 
 //parse a queryString
 function queryString(qs){
@@ -38,11 +40,9 @@ function queryString(qs){
    if(mentions){
       len=mentions.length;
       for(i= 0; i<len; i++){
-         mentions[i]=mentions[i].trim().replace('@','');
+         qs=qs.replace(mentions[i],'');
+         mentions[i]=mentions[i].trim().replace(/@/g,'');
       }
-   }
-   else{
-      mentions=null;
    }
 
    //"#" tag filtering
@@ -50,11 +50,9 @@ function queryString(qs){
    if(tags){
       len=tags.length;
       for(i= 0; i<len; i++){
-         tags[i]=tags[i].trim().replace('#','');
+         qs=qs.replace(tags[i],'');
+         tags[i]=tags[i].trim().replace(/#/g,'');
       }
-   }
-   else{
-      tags=null;
    }
 
    return {
@@ -77,7 +75,7 @@ search.prototype.routeFactory=function(config,cb){
 
    if(config.sort){
       dsl
-          .sort(config.sort || 'desc')
+          .sort(config.sort)
           .by(config.sortBy);
    }
 
@@ -90,7 +88,7 @@ search.prototype.routeFactory=function(config,cb){
    if(qs.text){
       dsl
           .should()
-          .match(config.fields).text(config.text);
+          .match(config.fields).text(qs.text);
    }
 
    if(qs.mentions && config.mentions){
@@ -102,8 +100,10 @@ search.prototype.routeFactory=function(config,cb){
    if(qs.tags && config.tags){
       dsl
           .must()
-          .match(config.tags).phrase(qs.tags)
+          .match(config.tags).text(qs.tags);
    }
+
+   dsl.exec(cb);
 };
 
 //configure a route to be searchable
@@ -117,9 +117,9 @@ search.prototype.routeFactory=function(config,cb){
    projection: Array
    //these are added from query params
    page: Number,
-   pageSize: Number,
    qs: String,
    //can be provided or overwritten by query param
+   pageSize: Number,
    sort: String,
    sortBy: String
 }
@@ -129,29 +129,39 @@ search.prototype.configRoute=function(route,config){
    this.app.get(route,function(req,res){
 
       //make sure these are numbers
-      config.page=req.params.page ? Number(req.params.page) : 0;
-      config.pageSize=req.params.pageSize ? Number(req.params.pageSize) : 10;
+      config.page=req.query.page ? Number(req.query.page) : 0;
+      config.pageSize=req.query.pageSize ? Number(req.query.pageSize) : config.pageSize;
 
       //setup sort config
-      config.sort=req.params.sort ? req.params.sort : config.sort;
-      config.sortBy=req.params.sortBy ? req.params.sortBy : config.sortBy;
+      config.sort=req.query.sort ? req.query.sort : config.sort;
+      config.sortBy=req.query.sortBy ? req.query.sortBy : config.sortBy;
 
       //get queryString
-      config.qs=req.params.qs || null;
+      config.qs=req.query.q;
 
       //make sure queryString was provided
       if(!config.qs){
          res.json({ok:0, error:"Missing queryString(qs)!",_debug:config});
       }
       else {
-         me.routeFactory(config, function (err, resp) {
+         me.routeFactory(config, function (err, results) {
             if (err) {
                res.json({ok: 0, error: err, _debug: config});
             }
             else {
-
+               res.json({
+                  ok:1,
+                  results:results,
+                  pager:{
+                     page:config.page,
+                     pageSize:config.pageSize,
+                     count:results.length
+                  }
+               })
             }
          });
       }
    });
 };
+
+module.exports=search;

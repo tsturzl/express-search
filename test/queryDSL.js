@@ -37,14 +37,14 @@ describe("Query Builder",function(){
     describe("#sort().by()",function(){
         it("should specify sort descending by date",function() {
             dsl
-                .sort(-1)
+                .sort('desc')
                 .by('date');
             expect(dsl.query.sort[0].date).to.exist;
             expect(dsl.query.sort[0].date.order).to.equal('desc');
         });
         it("should specify sort ascending by date",function() {
             dsl
-                .sort(1)
+                .sort('asc')
                 .by('date');
             expect(dsl.query.sort[0].date).to.exist;
             expect(dsl.query.sort[0].date.order).to.equal('asc');
@@ -58,7 +58,6 @@ describe("Query Builder",function(){
             .match('exactTest')
             .exact('exactTest');
         it("should have a must match exact term query in the bool query object",function(done){
-            console.log(dsl.query.query.bool.must);
             expect(dsl.query.query.bool.must[0].terms.exactTest).to.include.members([ 'exactTest' ]);
             done();
         });

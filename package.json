@@ -1,20 +1,38 @@
 {
-    "name": "express-search",
-    "version": "0.0.1",
-    "author":"Travis Sturzl <travissturzl@gmail.com>",
-    "license":["Apache-2.0"],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/tsturzl/express-search.git"
-    },
-    "scripts": {
-        "test": "mocha"
-    },
-    "dependencies": {
-        "elasticsearch":"^2.4.3"
-    },
-    "devDependencies": {
-        "mocha": "^1.21.4",
-        "chai": "~1.10.0"
-    }
+  "name": "express-search",
+  "version": "0.0.5",
+  "author": "Travis Sturzl <travissturzl@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tsturzl/express-search.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "elasticsearch": "3.1.x"
+  },
+  "devDependencies": {
+    "mocha": "^1.21.4",
+    "chai": "~1.10.0",
+    "supertest":"~0.15",
+    "express":"4.x"
+  },
+  "description": "ElasticSearch middleware, setup full-text search endpoints with rich features",
+  "bugs": {
+    "url": "https://github.com/tsturzl/express-search/issues"
+  },
+  "main": "express-search.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "elasticsearch",
+    "search",
+    "full-text",
+    "express-search",
+    "search",
+    "middleware"
+  ]
 }

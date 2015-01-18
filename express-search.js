@@ -1,141 +1,157 @@
+var queryDSL=require('./src/queryDSL.js');
 var elasticsearch=require('elasticsearch');
-var _search=require('./src/search.js');
 
-var search=function(options){
-
-    //check for and set index and type
-    if(options.hasOwnProperty('index') && options.hasOwnProperty('type')){
-        this.index=options.index;
-        this.type=options.type;
-    }
-    else{
-        throw 'Check your express-search configs! No index and/or type!';
-    }
-
-    //check for and set host or official es client
-    if(options.hasOwnProperty('hosts')){
-        this.elasticSearch=new elasticsearch.Client({
-            hosts:options.hosts,
-            log:'trace'
-        });
-    }
-    else if(options.hasOwnProperty('client')){
-        this.elasticSearch=options.client;
-    }
-    else{
-        throw "No elasticSearch client/connection provided!";
-    }
-
-    //check for and set search fields
-    if(options.hasOwnProperty('fields')){
-        this.fields=[].concat(options.fields);
-    }
-    else{
-        throw "No search field/s provided";
-        return;
-    }
-
-    //create search object
-    this.search=new _search(this.elasticSearch,this.index,this.type,this.fields);
+var search=function(app,config){
+   this.app=app;
+   this.client=new elasticsearch.Client(config);
 };
 
-//Hook default routes
-search.prototype.hook=function(app){
-    //body-parser? TODO
-    var me=this;
-    app.get('/search',function(req,res){
-        me.get(req,res);
-    });
-    app.put('/search',function(req,res){
-        if(!res){
-            console.log("WTF");
-        }
-        me.put(req,res);
-    });
-    console.log("HOOKED");
+/*    Query String parser     */
+
+//define these regexps ahead of time for reuse
+var regexp = /"[^"]*"/g;
+var _replace = /"/g;
+var mentionReg = /(^|\W)@\w+/g;
+var tagReg = /(^|\W)@\w+/g;
+
+//parse a queryString
+function queryString(qs){
+
+   //resuable iterator and length cache
+   var i,len;
+
+   //phrase filtering
+   var matches=qs.match(regexp);
+   if(matches){
+      len=matches.length;
+      for(i= 0; i<len; i++){
+         qs.replace(matches[i],''); //remove phrase from original queryString
+         matches[i]=matches[i].replace(_replace, ''); //clean each match
+      }
+   }
+   else{
+      matches=null;
+   }
+
+   //"@" tag filtering
+   var mentions=qs.match(mentionReg);
+   if(mentions){
+      len=mentions.length;
+      for(i= 0; i<len; i++){
+         mentions[i]=mentions[i].trim().replace('@','');
+      }
+   }
+   else{
+      mentions=null;
+   }
+
+   //"#" tag filtering
+   var tags=qs.match(tagReg);
+   if(tags){
+      len=tags.length;
+      for(i= 0; i<len; i++){
+         tags[i]=tags[i].trim().replace('#','');
+      }
+   }
+   else{
+      tags=null;
+   }
+
+   return {
+      text:qs, //String of search text
+      phrases:matches, //Array of phrases
+      tags:tags,
+      mentions:mentions
+   };
+}
+
+//Route factory
+search.prototype.routeFactory=function(config,cb){
+   var dsl=new queryDSL(this.client,config.index,config.type,config.pageSize);
+
+   var qs=queryString(config.qs);
+
+   dsl
+       .page(config.page)
+       .project(config.projection);
+
+   if(config.sort){
+      dsl
+          .sort(config.sort || 'desc')
+          .by(config.sortBy);
+   }
+
+   if(qs.phrases){
+      dsl
+          .must()
+          .match(config.fields).phrase(qs.phrases);
+   }
+
+   if(qs.text){
+      dsl
+          .should()
+          .match(config.fields).text(config.text);
+   }
+
+   if(qs.mentions && config.mentions){
+      dsl
+          .must()
+          .match(config.mentions).phrase(qs.mentions);
+   }
+
+   if(qs.tags && config.tags){
+      dsl
+          .must()
+          .match(config.tags).phrase(qs.tags)
+   }
 };
 
-//TODO: Implement the ability to load as middleware.
-search.prototype.middleware=function(req,res,next){};
+//configure a route to be searchable
+/* config ex:
+{
+   index: String,
+   type: String,
+   tags: Array,
+   mentions: Array,
+   fields: Array,
+   projection: Array
+   //these are added from query params
+   page: Number,
+   pageSize: Number,
+   qs: String,
+   //can be provided or overwritten by query param
+   sort: String,
+   sortBy: String
+}
+ */
+search.prototype.configRoute=function(route,config){
+   var me=this;
+   this.app.get(route,function(req,res){
 
-//GET to search
-search.prototype.get=function(req,res){
-    if (!req.body) return res.sendStatus(400);
-    try {
-        //send params to search module
-        this.search.search(
-            req.param('q', null),        //query string or query text (string)
-            req.param('sort', null),     //sort field (string)
-            req.param('order', 'asc'),   //order (string) either 'asc' or 'desc'
-            req.param('limit', 10),      //limit (int)
-            req.param('page', 0),        //page (int)
-            function (err, resp) {         //callback and respond
-                if (err) {
-                    res.json({
-                        success:false,
-                        message:"Search Failed!",
-                        error: err
-                    });
-                }
-                else {
-                    res.json(resp);
-                }
-            }
-        )
-    }
-    catch(e){
-        res.json({
-            success:false,
-            message:"Search Failed! Invalid parameters!",
-            error:e
-        });
-    }
-};
+      //make sure these are numbers
+      config.page=req.params.page ? Number(req.params.page) : 0;
+      config.pageSize=req.params.pageSize ? Number(req.params.pageSize) : 10;
 
-//create document(alias)
-search.create=function(me,id,doc,cb){
-    try{
-        me.search.create(id,doc,cb);
-    }
-    catch(e){
-        cb(e);
-    }
-};
+      //setup sort config
+      config.sort=req.params.sort ? req.params.sort : config.sort;
+      config.sortBy=req.params.sortBy ? req.params.sortBy : config.sortBy;
 
-//PUT to create document
-search.prototype.put=function(req,res){
-    if (!req.body) return res.sendStatus(400);
-    //try {
-    var body=req.body;
-    search.create(
-        this,
-        body.id,
-        body,
-        function (err, resp) {
+      //get queryString
+      config.qs=req.params.qs || null;
+
+      //make sure queryString was provided
+      if(!config.qs){
+         res.json({ok:0, error:"Missing queryString(qs)!",_debug:config});
+      }
+      else {
+         me.routeFactory(config, function (err, resp) {
             if (err) {
-                res.json({
-                    success: false,
-                    message: "Insert Failed!",
-                    error: err
-                });
+               res.json({ok: 0, error: err, _debug: config});
             }
             else {
-                res.json(resp);
-            }
-        }
-    );
-    /*}
-     catch(e){
-     res.json({
-     success:false,
-     message:"Create Failed! Invalid parameters!",
-     error:e
-     });
-     }*/
-};
 
-//export function to init express-search
-module.exports=function(options){
-    //initialize search object async'ly
-    return new search(options);
+            }
+         });
+      }
+   });
 };

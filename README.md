@@ -21,7 +21,7 @@ If you want to search only documents with certain tags you can use hash tags in 
  `#music by @paulsimmon "You Can Call Me Al"` Will try to find documents tagged "music", where "paulsimmon" is mentioned, and the phrase "You Can Call Me Al" is found.
 
 
- ##Setup
+ ##Setting Up an End Point
 
 
  Set up is super simple. You just have to:

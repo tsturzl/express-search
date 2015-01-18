@@ -5,5 +5,5 @@ node_js:
 services:
   - elasticsearch
 before_script:
-  - chmod +x ./setup_test.sh
-  - ./setup_test.sh
+  - chmod +x ./test/setup_test.sh
+  - ./test/setup_test.sh

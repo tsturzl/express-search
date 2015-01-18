@@ -98,3 +98,6 @@ There are several parameters you can pass via query string:
  - sortBy(String)
    - Set field to sort by
    - Overwrites default
+
+##Batteries Not Included!
+Express-Search will not index documents for you! You should either index them yourself or use a river plugin. This plugin will not handle configuring a mapping for your documents. This plugin simply handles search.

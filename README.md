@@ -9,22 +9,18 @@ Or
 `Recipies by @MarthaStewart`
 
 For example, if you want searches that _MUST_ contain the phrase "Puppies" and you'd prefer them to be wearing hats:
-
 `"Puppies" wearing hats` would return results containing documents that contain "puppies", and try to find documents where the puppies are wearing hats.
 
 If you want to find a person/place you can use mention style tags:
-
 `@hansolo` will return documents where hansolo is mentioned
 
 If you want to search only documents with certain tags you can use hash tags in your search:
-
 `#music top 10` will return documents with the tag "music, and look for a "top 10" document
 
  You can string them together to make concise yet powerful searches:
-
  `#music by @paulsimmon "You Can Call Me Al"` Will try to find documents tagged "music", where "paulsimmon" is mentioned, and the phrase "You Can Call Me Al" is found.
 
- #Setup
+ ##Setup
 
  Set up is super simple. You just have to:
 

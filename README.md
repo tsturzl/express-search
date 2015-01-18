@@ -2,9 +2,7 @@
 express-search
 ==============
 
-Super simple search plugin for express v4.x
-
-A beautifully bootstrapped elasticsearch search middleware for express.
+A beautifully bootstrapped elasticsearch search middleware for express v4.x.
 
 Allows you to do searches like `Pictures of "Cute Puppies"`
 Or

@@ -19,7 +19,7 @@
     "supertest":"~0.15",
     "express":"4.x"
   },
-  "description": "ElasticSearch middleware, setup full-text search endpoints with rich features",
+  "description": "Super simple search plugin for express, with rich features",
   "bugs": {
     "url": "https://github.com/tsturzl/express-search/issues"
   },

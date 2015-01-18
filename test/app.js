@@ -22,7 +22,7 @@ var map={
     sortBy:'sort'
 };
 
-search.configRoute('/api/search',map);
+search.setup('/api/search',map);
 
 //app.listen(3000);
 

@@ -124,7 +124,7 @@ search.prototype.routeFactory=function(config,cb){
    sortBy: String
 }
  */
-search.prototype.configRoute=function(route,config){
+search.prototype.setup=function(route,config){
    var me=this;
    this.app.get(route,function(req,res){
 

@@ -22,9 +22,9 @@ var map={
     sortBy:'sort'
 };
 
-search.setup('/api/search',map);
+app.use('/api/search',search.setup(map));
 
-//app.listen(3000);
+app.listen(3000);
 
 describe('GET /api/search',function(){
     var agent=request.agent(app);

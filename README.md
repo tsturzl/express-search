@@ -52,7 +52,7 @@ var config={
     //'log':'trace' //handy for debugging
 }
 
-var search=new expressSearch(app,configs);
+var search=new expressSearch(configs);
 ```
 
 Now you can use the expressSearch object to create multiple routes:
@@ -64,13 +64,13 @@ var mySearch={
    tags: ['tags','twitter.tags'], //fields for tag search
    mentions: ['authors','editors'], //fields for mention search
    fields: ['title','description'], //fields for general search
-   projection: ['title','description','authors','editors','tags], //fields to return in results
+   projection: ['title','description','authors','editors','tags'], //fields to return in results
    pageSize: 10, //default page size
    sort: 'desc',
    sortBy: 'createDate'
 };
 
-search.setup('/api/search',mySearch);
+app.use('/api/search/',search.setup(mySearch));
 ```
 
 Now to use it:
@@ -81,9 +81,9 @@ curl http://localhost/api/search?q=music
 
 You can use the expressSearch object to setup as many search endpoints are you desire.
 
-_NOTE:_ Sails users should use `sails.hooks.http.app` to refer to hook the app object.
 
 ##Using the end point
+Express-Search generates a GET end point at whichever route you configure.
 
 There are several parameters you can pass via query string:
  - q (String)

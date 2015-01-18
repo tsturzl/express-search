@@ -3,8 +3,7 @@ var elasticsearch=require('elasticsearch');
 
 
 //search constructor
-var search=function(app,config){
-   this.app=app;
+var search=function(config){
    this.client=new elasticsearch.Client(config);
 };
 
@@ -124,44 +123,51 @@ search.prototype.routeFactory=function(config,cb){
    sortBy: String
 }
  */
-search.prototype.setup=function(route,config){
+search.prototype.setup=function(config){
    var me=this;
-   this.app.get(route,function(req,res){
+   return function(req,res,next){
+      if(req.method==='GET') {
+         //make sure these are numbers
+         config.page = req.query.page ? Number(req.query.page) : 0;
+         config.pageSize = req.query.pageSize ? Number(req.query.pageSize) : config.pageSize;
 
-      //make sure these are numbers
-      config.page=req.query.page ? Number(req.query.page) : 0;
-      config.pageSize=req.query.pageSize ? Number(req.query.pageSize) : config.pageSize;
+         //setup sort config
+         config.sort = req.query.sort ? req.query.sort : config.sort;
+         config.sortBy = req.query.sortBy ? req.query.sortBy : config.sortBy;
 
-      //setup sort config
-      config.sort=req.query.sort ? req.query.sort : config.sort;
-      config.sortBy=req.query.sortBy ? req.query.sortBy : config.sortBy;
+         //get queryString
+         config.qs = req.query.q;
 
-      //get queryString
-      config.qs=req.query.q;
-
-      //make sure queryString was provided
-      if(!config.qs){
-         res.json({ok:0, error:"Missing queryString(qs)!",_debug:config});
+         //make sure queryString was provided
+         if (!config.qs) {
+            res.json({ok: 0, error: "Missing queryString(qs)!", _debug: config});
+         }
+         else {
+            me.routeFactory(config, function (err, results) {
+               if (err) {
+                  res.json({ok: 0, error: err, _debug: config});
+               }
+               else {
+                  res.json({
+                     ok: 1,
+                     results: results,
+                     pager: {
+                        page: config.page,
+                        pageSize: config.pageSize,
+                        count: results.length
+                     }
+                  })
+               }
+               if (next) {
+                  next();
+               }
+            });
+         }
       }
-      else {
-         me.routeFactory(config, function (err, results) {
-            if (err) {
-               res.json({ok: 0, error: err, _debug: config});
-            }
-            else {
-               res.json({
-                  ok:1,
-                  results:results,
-                  pager:{
-                     page:config.page,
-                     pageSize:config.pageSize,
-                     count:results.length
-                  }
-               })
-            }
-         });
+      else{
+         res.send("Cannot "+req.method+" "+req.originalUrl+"\n");
       }
-   });
+   }
 };
 
 module.exports=search;

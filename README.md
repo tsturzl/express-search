@@ -20,6 +20,7 @@ If you want to search only documents with certain tags you can use hash tags in 
  You can string them together to make concise yet powerful searches:
  `#music by @paulsimmon "You Can Call Me Al"` Will try to find documents tagged "music", where "paulsimmon" is mentioned, and the phrase "You Can Call Me Al" is found.
 
+
  Setup
  -----
 

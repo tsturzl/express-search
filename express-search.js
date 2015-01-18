@@ -156,7 +156,7 @@ search.prototype.setup=function(config){
                         pageSize: config.pageSize,
                         count: results.length
                      }
-                  })
+                  });
                }
                if (next) {
                   next();
@@ -166,8 +166,9 @@ search.prototype.setup=function(config){
       }
       else{
          res.send("Cannot "+req.method+" "+req.originalUrl+"\n");
+         next();
       }
-   }
+   };
 };
 
 module.exports=search;

@@ -7,3 +7,8 @@ services:
 before_script:
   - chmod +x ./test/setup_test.sh
   - ./test/setup_test.sh
+addons:
+  code_climate:
+    repo_token: ff99fbc0fc79aa7fee3476905ff21d722745eb4a3bb8a0da6b5a5f89edbb6d74
+after_script:
+  - cat lcov.info | codeclimate

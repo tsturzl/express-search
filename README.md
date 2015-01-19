@@ -67,7 +67,7 @@ var mySearch={
    tags: ['tags','twitter.tags'], //fields for tag search
    mentions: ['authors','editors'], //fields for mention search
    fields: ['title','description'], //fields for general search
-   projection: ['title','description','authors','editors','tags'], //fields to return in results
+   projection: ['title','description','authors','editors','tags'], //fields to return in results. ['*'] for all fields
    pageSize: 10, //default page size
    sort: 'desc',
    sortBy: 'createDate'

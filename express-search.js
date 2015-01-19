@@ -3,9 +3,7 @@ var elasticsearch=require('elasticsearch');
 
 
 //search constructor
-var search=function(config){
-   this.client=new elasticsearch.Client(config);
-};
+var search={};
 
 /*    Query String parser     */
 
@@ -63,7 +61,7 @@ function queryString(qs){
 }
 
 //Route factory
-search.prototype.routeFactory=function(config,cb){
+search.routeFactory=function(config,cb){
    var dsl=new queryDSL(this.client,config.index,config.type,config.pageSize);
 
    var qs=queryString(config.qs);
@@ -123,7 +121,7 @@ search.prototype.routeFactory=function(config,cb){
    sortBy: String
 }
  */
-search.prototype.setup=function(config){
+search.setup=function(config){
    var me=this;
    return function(req,res,next){
       if(req.method==='GET') {
@@ -171,7 +169,14 @@ search.prototype.setup=function(config){
    };
 };
 
+var _export=function(){};
 
-module.exports=function(config){
-   return new search(config);
+_export.prototype.connect=function(config){
+   search.client=new elasticsearch.Client(config);
+
+   this.setup=function(conf){
+      return search.setup(conf);
+   };
 };
+
+module.exports=new _export();

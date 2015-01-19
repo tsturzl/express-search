@@ -55,7 +55,7 @@ var config={
     //'log':'trace' //handy for debugging
 }
 
-var search=expressSearch(configs);
+expressSearch.connect(configs);
 ```
 
 Now you can use the expressSearch object to create multiple routes:
@@ -73,7 +73,7 @@ var mySearch={
    sortBy: 'createDate'
 };
 
-app.use('/api/search/',search.setup(mySearch));
+app.use('/api/search/',expressSearch.setup(mySearch));
 ```
 
 Now to use it:

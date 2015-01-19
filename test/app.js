@@ -1,5 +1,5 @@
 var express=require('express');
-var expressSearch=require('../express-search.js');
+var search=require('../express-search.js');
 var request = require('supertest');
 var expect = require('chai').expect;
 var app=express();
@@ -8,7 +8,7 @@ var configs={
     'host':'localhost:9200'
 };
 
-var search=expressSearch(configs);
+search.connect(configs);
 
 var map={
     index:'test',

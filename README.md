@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/tsturzl/express-search.svg)](https://travis-ci.org/tsturzl/express-search) [![Code Climate](https://codeclimate.com/github/tsturzl/express-search/badges/gpa.svg)](https://codeclimate.com/github/tsturzl/express-search)
 
+_install:_ `npm install express-search`
+
 #express-search
 
 

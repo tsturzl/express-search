@@ -8,7 +8,7 @@ var configs={
     'host':'localhost:9200'
 };
 
-var search=new expressSearch(app,configs);
+var search=expressSearch(configs);
 
 var map={
     index:'test',

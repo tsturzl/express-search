@@ -54,7 +54,7 @@ var config={
     //'log':'trace' //handy for debugging
 }
 
-var search=new expressSearch(configs);
+var search=expressSearch(configs);
 ```
 
 Now you can use the expressSearch object to create multiple routes:

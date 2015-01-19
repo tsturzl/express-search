@@ -171,4 +171,7 @@ search.prototype.setup=function(config){
    };
 };
 
-module.exports=search;
+
+module.exports=function(config){
+   return new search(config);
+};

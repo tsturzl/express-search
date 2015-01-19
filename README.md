@@ -72,7 +72,7 @@ var mySearch={
    sortBy: 'createDate'
 };
 
-app.use('/api/search/',search.setup(mySearch));
+app.get('/api/search/',search.setup(mySearch));
 ```
 
 Now to use it:

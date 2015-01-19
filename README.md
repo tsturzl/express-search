@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/tsturzl/express-search.png?label=ready&title=Ready)](https://waffle.io/tsturzl/express-search)
 [![Build Status](https://travis-ci.org/tsturzl/express-search.svg)](https://travis-ci.org/tsturzl/express-search) [![Code Climate](https://codeclimate.com/github/tsturzl/express-search/badges/gpa.svg)](https://codeclimate.com/github/tsturzl/express-search)
 
 __install:__ `npm install express-search`

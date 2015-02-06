@@ -16,91 +16,107 @@ var tagReg = /(^|\W)#\w+/g;
 //parse a queryString
 function queryString(qs) {
     "use strict";
-    //resuable iterator and length cache
+    //reusable iterator and length cache
     var i, len;
 
     //phrase filtering
-    var matches=qs.match(regexp);
-    if(matches){
-        len=matches.length;
-        for (i= 0; i<len; i++){
-            qs.replace(matches[i], ''); //remove phrase from original queryString
-            matches[i]=matches[i].replace(_replace, ''); //clean each match
-        }
-    }
-    else{
-        matches=null;
-    }
+    var matches = _filter(qs, qs.match(regexp));
+    qs = matches.qs;
+    matches = matches.match;
 
     //"@" tag filtering
-    var mentions=qs.match(mentionReg);
-    if (mentions) {
-        len = mentions.length;
-        for (i = 0; i < len; i++) {
-            qs = qs.replace(mentions[i], '');
-            mentions[i] = mentions[i].trim().replace(/@/g, '');
-        }
-    }
+    var mentions = _filter(qs, qs.match(mentionReg));
+    qs = mentions.qs;
+    mentions = mentions.match;
 
     //"#" tag filtering
-    var tags = qs.match(tagReg);
-    if (tags) {
-        len = tags.length;
-        for (i = 0; i < len; i++) {
-            qs = qs.replace(tags[i], '');
-            tags[i] = tags[i].trim().replace(/#/g, '');
-        }
-    }
+    var tags = _filter(qs, qs.match(tagReg));
+    qs = tags.qs;
+    tags = tags.match;
 
-    return {
+    var debug={
         text: qs, //String of search text
         phrases: matches, //Array of phrases
         tags: tags,
         mentions: mentions
+    };
+    console.log(debug);
+    return debug;
+}
+
+//regex filter
+function _filter(qs, arr) {
+    "use strict";
+    if(arr) {
+        var len = arr.length;
+        for (var i = 0; i < len; i++) {
+            qs = qs.replace(arr[i], '');
+            arr[i] = arr[i].trim().replace(/@|#/g, '');
+        }
+    }
+    return {
+        qs:qs,
+        match:arr
     };
 }
 
 //Route factory
 search.routeFactory = function (config, cb) {
     "use strict";
-    var dsl = new QueryDSL(this.client, config.index, config.type, config.pageSize);
 
+    //pass client to queryDSL
+    config.client=search.client;
+
+    //construct queryDSL
+    var dsl = new QueryDSL(config);
+
+    //parse query string
     var qs = queryString(config.qs);
 
     dsl
-        .page(config.page)
-        .project(config.projection);
+        .page(config.page)              //Which page to query
+        .project(config.projection);    //project fields(source filtering)
 
+    //sorting
     if (config.sort) {
         dsl
-            .sort(config.sort)
-            .by(config.sortBy);
+            .sort(config.sort)  //sort order ('asc' or 'desc')
+            .by(config.sortBy); //field to sort by
     }
 
+    //phrase matching
     if (qs.phrases) {
         dsl
-            .must()
-            .match(config.fields).phrase(qs.phrases);
+            .must()                     //results must match
+            .match(config.fields)       //this field
+                .phrase(qs.phrases);    //with this phrase
     }
 
+    //general text search
     if(qs.text){
         dsl
-            .should()
-            .match(config.fields).text(qs.text);
+            .should()               //results should match(but don't have to)
+            .match(config.fields)   //this field
+                .text(qs.text);     //with this text
     }
 
+    //mention tag searching
     if(qs.mentions && config.mentions){
         dsl
-            .must()
-            .match(config.mentions).phrase(qs.mentions);
+            .must()                     //results must match
+            .match(config.mentions)     //this field
+                .phrase(qs.mentions);   //with this phrase
     }
 
+    //hash tag searching
     if(qs.tags && config.tags){
         dsl
-            .must()
-            .match(config.tags).text(qs.tags);
+            .must()                 //results must match
+            .match(config.tags)     //this field
+                .text(qs.tags);     //with this text
     }
 
+    //run query and callback results `cb(err,results)`
     dsl.exec(cb);
 };
 
@@ -125,6 +141,8 @@ search.routeFactory = function (config, cb) {
 search.setup=function (config) {
     "use strict";
     var me = this;
+
+    //return function which can be routed
     return function (req, res, next) {
         if (req.method === 'GET') {
             //make sure these are numbers

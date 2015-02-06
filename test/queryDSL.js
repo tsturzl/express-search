@@ -6,7 +6,12 @@ describe("Query Builder",function(){
 
     var pageSize=10;
 
-    var dsl=new queryBuilder(null,'test','test',pageSize);
+    var dsl=new queryBuilder({
+        client: null,
+        index: 'test',
+        type: 'test',
+        pageSize: pageSize
+    });
 
     //pagination component
     describe("#page()",function(){

@@ -98,10 +98,10 @@ describe('GET /api/search',function(){
             .end(function(err,res){
                 if(err) return done(err);
                 var body=res.body;
+                console.log('BODY: ', body);
                 expect(body.ok).to.equal(1);
                 expect(body).to.have.property('results');
                 expect(body.results).to.have.length(1);
-
                 expect(body.results[0].title).to.equal("Test 1");
 
                 done();

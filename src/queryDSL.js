@@ -24,12 +24,12 @@
  */
 
 //~Constructor
-var queryBuilder = function(client, index, type, pageSize) {
+var queryBuilder = function(options) {
     "use strict";
-    this.pageSize = pageSize || 10;
-    this.client = client;
-    this.index = index;
-    this.type = type;
+    this.pageSize = options.pageSize;
+    this.client = options.client;
+    this.index = options.index;
+    this.type = options.type;
 
     //query template
     this.query = {

@@ -24,22 +24,23 @@
  */
 
 //~Constructor
-var queryBuilder=function(client,index,type,pageSize){
-    this.pageSize=pageSize || 10;
-    this.client=client;
-    this.index=index;
-    this.type=type;
+var queryBuilder = function(client, index, type, pageSize) {
+    "use strict";
+    this.pageSize = pageSize || 10;
+    this.client = client;
+    this.index = index;
+    this.type = type;
 
     //query template
-    this.query={
+    this.query = {
         from: 0,
         size: this.pageSize,
-        query:{
-            bool:{
-                must:[],
-                should:[],
-                minimum_should_match:1,
-                boost:1.0
+        query: {
+            bool: {
+                must: [],
+                should: [],
+                minimum_should_match: 1,
+                boost: 1.0
             }
         }
     };
@@ -47,17 +48,18 @@ var queryBuilder=function(client,index,type,pageSize){
 
 
 //reusable chaining method for building dsl chain
-function _chain(me,method){
+function _chain(me, method) {
+    "use strict";
     return {
         //chain match to set field
-        match:function(field) {
+        match: function(field) {
 
             //sub-chain
             var methods = {
 
                 //exact match
                 exact: function (value) {
-                    me.query.query.bool[method]=me.query.query.bool[method].concat(
+                    me.query.query.bool[method] = me.query.query.bool[method].concat(
                         me.exact(field, value)
                     );
                     return _chain(me,method);
@@ -65,15 +67,15 @@ function _chain(me,method){
 
                 //text match
                 text: function (text) {
-                    me.query.query.bool[method]=me.query.query.bool[method].concat(
+                    me.query.query.bool[method] = me.query.query.bool[method].concat(
                         me.text(field, text)
                     );
-                    return _chain(me,method);
+                    return _chain(me, method);
                 },
 
                 //phrase match
                 phrase: function (phrase) {
-                    me.query.query.bool[method]=me.query.query.bool[method].concat(
+                    me.query.query.bool[method] = me.query.query.bool[method].concat(
                         me.phrase(field, phrase)
                     );
                     return _chain(me,method);
@@ -83,99 +85,105 @@ function _chain(me,method){
 
             return methods;
         },
-        should:me.should,
-        must:me.must,
-        exec:function(){
+        should: me.should,
+        must: me.must,
+        exec: function() {
             return me.exec();
         }
     };
 }
 
 //Pager, calculates size/from from pageSize/pageNum
-queryBuilder.prototype.page=function(pageNum){
-    this.query.from = pageNum===0 ? 0 : pageNum*this.pageSize;
+queryBuilder.prototype.page = function(pageNum) {
+    "use strict";
+    this.query.from = (pageNum === 0) ? 0 : pageNum*this.pageSize;
     return this;
 };
 
 //Field projection, provide array of fields you'd like in your results
-queryBuilder.prototype.project=function(fields){
-    this.query._source=fields;
+queryBuilder.prototype.project = function(fields) {
+    "use strict";
+    this.query._source = fields;
     return this;
 };
 
 //Sort by field either ascending or descending
-queryBuilder.prototype.sort=function(order){
+queryBuilder.prototype.sort = function(order) {
+    "use strict";
     order=order ? order : 'desc';
-    var me=this;
+    var me = this;
     return {
-        by:function(field){
+        by:function (field) {
 
-            var sortObj={};
+            var sortObj = {};
 
             //create sort object
-            sortObj[field]={
+            sortObj[field] = {
                 order: order
             };
 
             //set sorting
-            me.query.sort=[sortObj];
+            me.query.sort = [sortObj];
             return me;
         }
-    }
+    };
 };
 
 /**     Occurance Type      **/
 
 //Result MUST match this query, and all other MUST queries [this function is a chain method]
-queryBuilder.prototype.must=function(){
-    return _chain(this,'must'); //build dsl chain
+queryBuilder.prototype.must = function() {
+    "use strict";
+    return _chain(this, 'must'); //build dsl chain
 };
 
 //Result SHOULD match at least one of these queries [this funtion is a chain method]
-queryBuilder.prototype.should=function(){
-    return _chain(this,'should'); //build dsl chain
+queryBuilder.prototype.should = function(){
+    "use strict";
+    return _chain(this, 'should'); //build dsl chain
 };
 
 
 /**     Query Method      **/
 
 //Query for fields with this exact value
-queryBuilder.prototype.exact=function(field,value){
-    var terms=[];
+queryBuilder.prototype.exact = function(field, value) {
+    "use strict";
+    var terms = [];
 
     //build term and push to array
-    function addTerm(field,values){
+    function addTerm(field, values) {
         //add "terms" query
-        var obj={
-            terms:{
-                minimum_should_match:1
+        var obj = {
+            terms: {
+                minimum_should_match: 1
             }
         };
-        obj.terms[field]=values;
+        obj.terms[field] = values;
         terms.push(obj);
     }
 
     //convert to an arrays to simplify logic
-    value=[].concat(value);
-    field=[].concat(field);
+    value = [].concat(value);
+    field = [].concat(field);
 
     //for each field add a term
-    for(var i= 0,len=field.length; i<len; i++){
-        addTerm(field[i],value);
+    for(var i = 0, len = field.length; i<len; i++) {
+        addTerm(field[i], value);
     }
     return terms;
 };
 
 //Query for fields with this phrase
-queryBuilder.prototype.phrase=function(field,phrase){
-
+queryBuilder.prototype.phrase = function(field, phrase) {
+    "use strict";
     //convert to an array to simplify logic
-    field=[].concat(field);
+    field = [].concat(field);
 
     if(typeof phrase === 'object'){
-        var queries=[];
+        var queries = [];
 
-        for(var i= 0, len=phrase.length; i<len; i++){
+        for(var i = 0, len = phrase.length; i<len; i++){
             queries.push({
                 multi_match:{
                     query:phrase[i],
@@ -199,60 +207,73 @@ queryBuilder.prototype.phrase=function(field,phrase){
 };
 
 //Query for fields containing this text
-queryBuilder.prototype.text=function(field,text){
-    if(typeof text === 'object'){
-        text=text.join(' ');
+queryBuilder.prototype.text = function(field,text) {
+    "use strict";
+    if(typeof text === 'object') {
+        text = text.join(' ');
     }
 
     //convert to an array to simplify logic
-    field=[].concat(field);
+    field = [].concat(field);
 
     return {
-        multi_match:{
-            query:text,
-            fields:field
+        multi_match: {
+            query: text,
+            fields: field
         }
     };
 };
 
 
 //Execute Query
-queryBuilder.prototype.exec=function(cb){
-    var me=this;
+queryBuilder.prototype.exec = function(cb) {
+    "use strict";
+    var me = this;
+
     this.client.search({
         index:this.index,
         type:this.type,
         body:this.build()
-    },function(err,results){
-        if(err){
+    }, function(err, results) {
+        if(err) {
             cb(err);
         }
-        else{
-            var response=[];
-            var hits=results.hits.hits;
-            for(var i= 0,len=hits.length; i<len; i++){
+        else {
+            var response = [];
+            var hits = results.hits.hits;
+            for(var i = 0,len = hits.length; i<len; i++){
                 response.push(hits[i]._source);
             }
-            cb(null,response);
+            cb(null, response);
         }
     });
 };
 
 
 //Method to build query. Not needed yet, but useful for expansion. Useful for testing/debugging
-queryBuilder.prototype.build=function(){
-    if(this.query.query.bool.must.length===0){
+queryBuilder.prototype.build = function() {
+    "use strict";
+    if(this.query.query.bool.must.length === 0){
         delete this.query.query.bool.must;
     }
-    if(this.query.query.bool.should.length===0){
+    if(this.query.query.bool.should.length === 0){
         delete this.query.query.bool.should;
     }
     return this.query;
 };
 
 //Standard methods
-queryBuilder.prototype.toString=function(){return JSON.stringify(this.build())};
-queryBuilder.prototype.toJSON=function(){return this.toString()};
-queryBuilder.prototype.toObject=function(){return this.build()};
+queryBuilder.prototype.toString = function() {
+    "use strict";
+    return JSON.stringify(this.build());
+};
+queryBuilder.prototype.toJSON = function(){
+    "use strict";
+    return this.toString();
+};
+queryBuilder.prototype.toObject = function(){
+    "use strict";
+    return this.build();
+};
 
-module.exports=queryBuilder;
+module.exports = queryBuilder;

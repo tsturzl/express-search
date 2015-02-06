@@ -55,7 +55,7 @@ function _chain(me, method) {
         match: function(field) {
 
             //sub-chain
-            var methods = {
+            return {
 
                 //exact match
                 exact: function (value) {
@@ -82,8 +82,6 @@ function _chain(me, method) {
                 }
 
             };
-
-            return methods;
         },
         should: me.should,
         must: me.must,
@@ -228,7 +226,6 @@ queryBuilder.prototype.text = function(field,text) {
 //Execute Query
 queryBuilder.prototype.exec = function(cb) {
     "use strict";
-    var me = this;
 
     this.client.search({
         index:this.index,

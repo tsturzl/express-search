@@ -57,10 +57,12 @@ function _chain(me, method) {
             //sub-chain factory
             function subChain(matchType) {
                 return function(value) {
-                    me.query.query.bool[method] = me.query.query.bool[method].concat(
-                        me[matchType](field, value)
-                    );
-                    return _chain(me,method);
+                    if(value) {
+                        me.query.query.bool[method] = me.query.query.bool[method].concat(
+                            me[matchType](field, value)
+                        );
+                    }
+                    return me;
                 };
             }
 

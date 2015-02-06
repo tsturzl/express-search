@@ -9,7 +9,7 @@ var search = {};
 
 //define these regexps ahead of time for reuse
 var regexp = /"[^"]*"/g;
-var _replace = /"/g;
+var _replace = /@|#|"/g;
 var mentionReg = /(^|\W)@\w+/g;
 var tagReg = /(^|\W)#\w+/g;
 
@@ -48,7 +48,7 @@ function _filter(qs, arr) {
         var len = arr.length;
         for (var i = 0; i < len; i++) {
             qs = qs.replace(arr[i], '');
-            arr[i] = arr[i].trim().replace(/@|#/g, '');
+            arr[i] = arr[i].trim().replace(_replace, '');
         }
     }
     return {
@@ -81,37 +81,20 @@ search.routeFactory = function (config, cb) {
             .by(config.sortBy); //field to sort by
     }
 
-    //phrase matching
-    if (qs.phrases) {
-        dsl
-            .must()                     //results must match
-            .match(config.fields)       //this field
-                .phrase(qs.phrases);    //with this phrase
-    }
-
-    //general text search
-    if(qs.text){
-        dsl
-            .should()               //results should match(but don't have to)
-            .match(config.fields)   //this field
-                .text(qs.text);     //with this text
-    }
-
-    //mention tag searching
-    if(qs.mentions && config.mentions){
-        dsl
-            .must()                     //results must match
-            .match(config.mentions)     //this field
-                .phrase(qs.mentions);   //with this phrase
-    }
-
-    //hash tag searching
-    if(qs.tags && config.tags){
-        dsl
-            .must()                 //results must match
-            .match(config.tags)     //this field
-                .text(qs.tags);     //with this text
-    }
+    //build query
+    dsl
+        .must()                     //results must match
+        .match(config.fields)       //this field
+            .phrase(qs.phrases)     //with this phrase
+        .should()
+        .match(config.fields)
+            .text(qs.text)
+        .must()
+        .match(config.mentions)
+            .phrase(qs.mentions)
+        .must()
+        .match(config.tags)
+            .text(qs.tags);
 
     //run query and callback results `cb(err,results)`
     dsl.exec(cb);

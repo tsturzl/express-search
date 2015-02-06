@@ -16,9 +16,6 @@ var tagReg = /(^|\W)#\w+/g;
 //parse a queryString
 function queryString(qs) {
     "use strict";
-    //reusable iterator and length cache
-    var i, len;
-
     //phrase filtering
     var matches = _filter(qs, qs.match(regexp));
     qs = matches.qs;

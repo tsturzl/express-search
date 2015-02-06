@@ -54,32 +54,27 @@ function _chain(me, method) {
         //chain match to set field
         match: function(field) {
 
+            //sub-chain factory
+            function subChain(matchType) {
+                return function(value) {
+                    me.query.query.bool[method] = me.query.query.bool[method].concat(
+                        me[matchType](field, value)
+                    );
+                    return _chain(me,method);
+                };
+            }
+
             //sub-chain
             return {
 
                 //exact match
-                exact: function (value) {
-                    me.query.query.bool[method] = me.query.query.bool[method].concat(
-                        me.exact(field, value)
-                    );
-                    return _chain(me,method);
-                },
+                exact: subChain('exact'),
 
                 //text match
-                text: function (text) {
-                    me.query.query.bool[method] = me.query.query.bool[method].concat(
-                        me.text(field, text)
-                    );
-                    return _chain(me, method);
-                },
+                text: subChain('text'),
 
                 //phrase match
-                phrase: function (phrase) {
-                    me.query.query.bool[method] = me.query.query.bool[method].concat(
-                        me.phrase(field, phrase)
-                    );
-                    return _chain(me,method);
-                }
+                phrase: subChain('phrase')
 
             };
         },

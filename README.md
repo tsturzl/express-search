@@ -5,12 +5,10 @@ __install:__ `npm install express-search`
 
 #express-search
 
-
 A beautifully bootstrapped elasticsearch search middleware for express v4.x.
 
 Allows you to do searches like `Pictures of "Cute Puppies"`
-Or
-`Recipies by @MarthaStewart`
+Or `Recipies by @MarthaStewart`
 
 For example, if you want searches that _MUST_ contain the phrase "Puppies" and you'd prefer them to be wearing hats:
 `"Puppies" wearing hats` would return results containing documents that contain "puppies", and try to find documents where the puppies are wearing hats.
@@ -25,10 +23,9 @@ If you want to search only documents with certain tags you can use hash tags in 
  `#music by @paulsimmon "You Can Call Me Al"` Will try to find documents tagged "music", where "paulsimmon" is mentioned, and the phrase "You Can Call Me Al" is found.
 
 
- ##Setting Up an End Point
+##Setting Up an End Point
 
-
- Set up is super simple. You just have to:
+Set up is super simple. You just have to:
 
   - Provide connection settings for ElasticSearch.
   - Set Index and Type to search.

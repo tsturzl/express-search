@@ -43,7 +43,7 @@ describe('GET /api/search',function(){
             .end(function(err,res){
                 if(err) return done(err);
                 var body=res.body;
-                expect(body.ok).to.equal(1);
+                expect(body.ok).to.equal(true);
                 expect(body.results).to.have.length(3);
                 expect(body.pager.page).to.equal(0);
                 expect(body.pager.pageSize).to.equal(10);
@@ -60,7 +60,7 @@ describe('GET /api/search',function(){
             .end(function(err,res){
                 if(err) return done(err);
                 var body=res.body;
-                expect(body.ok).to.equal(1);
+                expect(body.ok).to.equal(true);
                 expect(body).to.have.property('results');
                 expect(body.results).to.have.length(3);
 
@@ -80,7 +80,7 @@ describe('GET /api/search',function(){
             .end(function(err,res){
                 if(err) return done(err);
                 var body=res.body;
-                expect(body.ok).to.equal(1);
+                expect(body.ok).to.equal(true);
                 expect(body).to.have.property('results');
                 expect(body.results).to.have.length(1);
 
@@ -99,7 +99,7 @@ describe('GET /api/search',function(){
                 if(err) return done(err);
                 var body=res.body;
                 console.log('BODY: ', body);
-                expect(body.ok).to.equal(1);
+                expect(body.ok).to.equal(true);
                 expect(body).to.have.property('results');
                 expect(body.results).to.have.length(1);
                 expect(body.results[0].title).to.equal("Test 1");
@@ -116,7 +116,7 @@ describe('GET /api/search',function(){
             .end(function(err,res){
                 if(err) return done(err);
                 var body=res.body;
-                expect(body.ok).to.equal(1);
+                expect(body.ok).to.equal(true);
                 expect(body).to.have.property('results');
                 expect(body.results).to.have.length(1);
 

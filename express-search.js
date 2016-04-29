@@ -143,11 +143,11 @@ search.setup=function (config) {
             else {
                 me.routeFactory(config, function (err, results) {
                     if (err) {
-                        res.json({ok: 0, error: err, _debug: config});
+                        res.json({ok: false, error: err.message});
                     }
                     else {
                         res.json({
-                            ok: 1,
+                            ok: true,
                             results: results,
                             pager: {
                                 page: config.page,

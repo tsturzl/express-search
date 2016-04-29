@@ -8,18 +8,18 @@
     "url": "https://github.com/tsturzl/express-search.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "./test/setup_test.sh; mocha"
   },
   "dependencies": {
-    "elasticsearch": "3.1.x"
+    "elasticsearch": "^11.0.1"
   },
   "devDependencies": {
-    "mocha": "^1.21.4",
+    "mocha": "^2.4.5",
     "chai": "~1.10.0",
-    "supertest":"~0.15",
+    "supertest":"^1.2.0",
     "express":"4.x",
-    "istanbul":"~0.3.5",
-    "codeclimate-test-reporter":"~0.0.4"
+    "istanbul":"^0.4.3",
+    "codeclimate-test-reporter":"^0.0.4"
   },
   "description": "Super simple search plugin for express, with rich features",
   "bugs": {

@@ -1,6 +1,6 @@
 {
   "name": "express-search",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Travis Sturzl <travissturzl@gmail.com>",
   "license": "Apache-2.0",
   "repository": {
@@ -16,10 +16,10 @@
   "devDependencies": {
     "mocha": "^2.4.5",
     "chai": "~1.10.0",
-    "supertest":"^1.2.0",
-    "express":"4.x",
-    "istanbul":"^0.4.3",
-    "codeclimate-test-reporter":"^0.0.4"
+    "supertest": "^1.2.0",
+    "express": "4.x",
+    "istanbul": "^0.4.3",
+    "codeclimate-test-reporter": "^0.0.4"
   },
   "description": "Super simple search plugin for express, with rich features",
   "bugs": {

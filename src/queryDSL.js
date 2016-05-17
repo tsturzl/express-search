@@ -39,6 +39,7 @@ var queryBuilder = function(options) {
             bool: {
                 must: [],
                 should: [],
+                minimum_should_match: 1,
                 boost: 1.0
             }
         }
@@ -149,9 +150,7 @@ queryBuilder.prototype.exact = function(field, value) {
     function addTerm(field, values) {
         //add "terms" query
         var obj = {
-            terms: {
-                minimum_should_match: 1
-            }
+            terms: {}
         };
         obj.terms[field] = values;
         terms.push(obj);

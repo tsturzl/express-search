@@ -1,3 +1,4 @@
+"use strict";
 var QueryDSL = require('./src/queryDSL.js'),
     elasticsearch = require('elasticsearch');
 
@@ -15,7 +16,7 @@ var tagReg = /(^|\W)#\w+/g;
 
 //parse a queryString
 function queryString(qs) {
-    "use strict";
+
     //phrase filtering
     var matches = _filter(qs, qs.match(regexp));
     qs = matches.qs;
@@ -43,7 +44,7 @@ function queryString(qs) {
 
 //regex filter
 function _filter(qs, arr) {
-    "use strict";
+
     if(arr) {
         var len = arr.length;
         for (var i = 0; i < len; i++) {
@@ -59,7 +60,7 @@ function _filter(qs, arr) {
 
 //Route factory
 search.routeFactory = function (config, cb) {
-    "use strict";
+
 
     //pass client to queryDSL
     config.client=search.client;
@@ -119,7 +120,7 @@ search.routeFactory = function (config, cb) {
  }
  */
 search.setup=function (config) {
-    "use strict";
+
     var me = this;
 
     //return function which can be routed
@@ -172,7 +173,7 @@ search.setup=function (config) {
 var _export = function(){};
 
 _export.prototype.connect=function(config) {
-    "use strict";
+
     search.client = new elasticsearch.Client(config);
 
     this.setup = function(conf) {

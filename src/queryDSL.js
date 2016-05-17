@@ -23,9 +23,10 @@
  *    });
  */
 
+"use strict";
+
 //~Constructor
 var queryBuilder = function(options) {
-    "use strict";
     this.pageSize = options.pageSize;
     this.client = options.client;
     this.index = options.index;
@@ -49,7 +50,7 @@ var queryBuilder = function(options) {
 
 //reusable chaining method for building dsl chain
 function _chain(me, method) {
-    "use strict";
+    
     return {
         //chain match to set field
         match: function(field) {

@@ -39,7 +39,6 @@ var queryBuilder = function(options) {
             bool: {
                 must: [],
                 should: [],
-                minimum_should_match: 1,
                 boost: 1.0
             }
         }

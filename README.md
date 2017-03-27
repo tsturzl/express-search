@@ -5,6 +5,8 @@ __install:__ `npm install express-search`
 
 #express-search
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/tsturzl/express-search.svg)](https://greenkeeper.io/)
+
 A beautifully bootstrapped elasticsearch search middleware for express v4.x.
 
 Allows you to do searches like `Pictures of "Cute Puppies"`

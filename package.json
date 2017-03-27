@@ -11,15 +11,15 @@
     "test": "./test/setup_test.sh; mocha"
   },
   "dependencies": {
-    "elasticsearch": "^11.0.1"
+    "elasticsearch": "^12.1.3"
   },
   "devDependencies": {
-    "mocha": "^2.4.5",
-    "chai": "~1.10.0",
-    "supertest": "^1.2.0",
+    "mocha": "^3.2.0",
+    "chai": "~3.5.0",
+    "supertest": "^3.0.0",
     "express": "4.x",
     "istanbul": "^0.4.3",
-    "codeclimate-test-reporter": "^0.0.4"
+    "codeclimate-test-reporter": "^0.4.1"
   },
   "description": "Super simple search plugin for express, with rich features",
   "bugs": {

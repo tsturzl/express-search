@@ -1,11 +1,11 @@
 [![Stories in Ready](https://badge.waffle.io/tsturzl/express-search.png?label=ready&title=Ready)](https://waffle.io/tsturzl/express-search)
 [![Build Status](https://travis-ci.org/tsturzl/express-search.svg)](https://travis-ci.org/tsturzl/express-search) [![Code Climate](https://codeclimate.com/github/tsturzl/express-search/badges/gpa.svg)](https://codeclimate.com/github/tsturzl/express-search) [![Test Coverage](https://codeclimate.com/github/tsturzl/express-search/badges/coverage.svg)](https://codeclimate.com/github/tsturzl/express-search)
+[![Greenkeeper badge](https://badges.greenkeeper.io/tsturzl/express-search.svg)](https://greenkeeper.io/)
 
 __install:__ `npm install express-search`
 
 #express-search
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/tsturzl/express-search.svg)](https://greenkeeper.io/)
 
 A beautifully bootstrapped elasticsearch search middleware for express v4.x.
 

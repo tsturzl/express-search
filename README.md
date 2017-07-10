@@ -4,7 +4,8 @@
 
 __install:__ `npm install express-search`
 
-#express-search
+
+# express-search
 
 
 A beautifully bootstrapped elasticsearch search middleware for express v4.x.
@@ -25,7 +26,7 @@ If you want to search only documents with certain tags you can use hash tags in 
  `#music by @paulsimmon "You Can Call Me Al"` Will try to find documents tagged "music", where "paulsimmon" is mentioned, and the phrase "You Can Call Me Al" is found.
 
 
-##Setting Up an End Point
+## Setting Up an End Point
 
 Set up is super simple. You just have to:
 
@@ -84,7 +85,7 @@ curl http://localhost/api/search?q=music
 You can use the expressSearch object to setup as many search endpoints are you desire.
 
 
-##Using the end point
+## Using the end point
 Express-Search generates a GET end point at whichever route you configure.
 
 There are several parameters you can pass via query string:
@@ -101,5 +102,5 @@ There are several parameters you can pass via query string:
    - Set field to sort by
    - Overwrites default
 
-##Batteries Not Included!
+## Batteries Not Included!
 Express-Search will not index documents for you! You should either index them yourself or use a river plugin. This plugin will not handle configuring a mapping for your documents. This plugin simply handles search.

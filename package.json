@@ -16,7 +16,7 @@
   "devDependencies": {
     "mocha": "^3.2.0",
     "chai": "~4.0.1",
-    "supertest": "^3.0.0",
+    "supertest": "^3.4.0",
     "express": "4.x",
     "istanbul": "^0.4.3",
     "codeclimate-test-reporter": "^0.4.1"
